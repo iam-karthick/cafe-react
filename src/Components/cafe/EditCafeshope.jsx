@@ -2,22 +2,24 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 
 import { useState } from "react";
-import {  cafe_shopUpdated } from "./CafeshopeSlice";
+import {  cafe_shopUpdated } from "../employee/employeeSlice";
+import { baseURL } from "../../Service/rest.model";
+import axios from "axios";
 
 export function EditCafe() {
   const { pathname } = useLocation();
-  const cafe_shopId = parseInt(pathname.replace("/edit-cafe/", ""));
+  const cafe_shopId = pathname.replace("/edit-cafe/", "");
 
   const cafe_shop = useSelector((state) =>
-    state.cafe_shops.entities.find((cafe_shop) => cafe_shop.id === cafe_shopId)
+  state.employees.entities.find((employee) => employee._id === cafe_shopId)
   );
 
   const dispatch = useDispatch();
   const history = useNavigate();
 
   const [name, setName] = useState(cafe_shop.name);
-  const [location, setLocation] = useState("");
-  const [description,setDescription] = useState("");  
+  const [location, setLocation] = useState(cafe_shop.location);
+  const [description,setDescription] = useState(cafe_shop.description);  
   const [error, setError] = useState(null);
 
   
@@ -26,16 +28,24 @@ export function EditCafe() {
   const handleDescription = (e) => setDescription(e.target.value);
 
   const handleClick = () => {
-    if (name && location) {
+    if (name && location && description) {
       dispatch(
         cafe_shopUpdated({
           id: cafe_shopId,
           name,location,description
         })
       );
-
-      setError(null);
-      history.push("/");
+      let  url = `${baseURL}`+"edit-cafe/"+`${cafe_shopId}`
+      axios.put(url, {
+            name,
+            description,
+            location
+          }).then((res) => {
+            console.log(res.status.code)
+              setError(null);
+              history('/')
+      })
+      // history("/");
     } else {
       setError("Fill in all fields");
     }
@@ -77,7 +87,7 @@ export function EditCafe() {
           />
           {error && error}
           <button onClick={handleClick} className="button-primary">
-            Save cafe_shop
+            Save cafe
           </button>
         </div>
       </div>

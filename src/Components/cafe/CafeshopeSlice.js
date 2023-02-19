@@ -1,8 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { baseURL } from "../../Service/rest.model";
 
 export const fetchCafe_shops = createAsyncThunk("cafe_shops/fetchCafe_shops", async () => {
-  const response = await fetch("https://jsonplaceholder.typicode.com/users");
+  const response = await fetch(`${baseURL}`+"cafe");
   const cafe_shops = await response.json();
+  console.log(cafe_shops)
   return cafe_shops;
 });
 
@@ -18,7 +20,7 @@ const CofeshopeSlice = createSlice({
     },
     cafe_shopUpdated(state, action) {
       const { id, name, description } = action.payload;
-      const existingCafe_shop = state.entities.find((cafe_shop) => cafe_shop.id === id);
+      const existingCafe_shop = state.entities.find((cafe_shop) => cafe_shop._id === id);
       if (existingCafe_shop) {
         existingCafe_shop.name = name;
         existingCafe_shop.description = description;
@@ -26,9 +28,9 @@ const CofeshopeSlice = createSlice({
     },
     cafe_shopDeleted(state, action) {
       const { id } = action.payload;
-      const existingCafe_shop = state.entities.find((cafe_shop) => cafe_shop.id === id);
+      const existingCafe_shop = state.entities.find((cafe_shop) => cafe_shop._id === id);
       if (existingCafe_shop) {
-        state.entities = state.entities.filter((cafe_shop) => cafe_shop.id !== id);
+        state.entities = state.entities.filter((cafe_shop) => cafe_shop._id !== id);
       }
     },
   },

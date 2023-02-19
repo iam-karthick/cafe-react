@@ -2,7 +2,9 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { cafe_shopAdded } from "./CafeshopeSlice";
+import { cafe_shopAdded } from "../employee/employeeSlice";
+import { baseURL } from "../../Service/rest.model";
+import axios from "axios";
 
 export function AddCafe() {
   const dispatch = useDispatch();
@@ -16,7 +18,7 @@ export function AddCafe() {
   const handleName = (e) => setName(e.target.value);
   const handleLocation = (e) => setLocation(e.target.value);
   const handleDescription = (e) => setDescription(e.target.value);
-  const cafe_shopAmount = useSelector((state) => state.cafe_shop.entities.length);
+  const cafe_shopAmount = useSelector((state) => state.cafe_shops.entities.length);
 
   const handleClick = () => {
     if (name && location) {
@@ -29,8 +31,16 @@ export function AddCafe() {
         })
       );
 
-      setError(null);
-      history.push("/");
+      axios.post(`${baseURL}`+"cafe", {
+        name,
+        description,
+        location,
+      }).then((res) => {
+        console.log(res.status.code)
+          history('/')
+  })
+      // setError(null);
+      // history.push("/");
     } else {
       setError("Fill in all fields");
     }
@@ -59,7 +69,7 @@ export function AddCafe() {
           <input
             className="u-full-width"
             type="text"
-            placeholder="test description"
+            placeholder=" description"
             id="desctiptionInput"
             onChange={handleDescription}
             value={description}
@@ -67,7 +77,7 @@ export function AddCafe() {
              <label htmlFor="loctionInput">Location</label>
           <input
             className="u-full-width"
-            type="number"
+            type="text"
             placeholder="Place"
             id="loctionInput"
             onChange={handleLocation}

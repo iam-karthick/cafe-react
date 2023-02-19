@@ -1,16 +1,32 @@
-import { fetchEmployees, employeeDeleted } from "./employeeSlice";
+import { employeeDeleted } from "./employeeSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { baseURL } from "../../Service/rest.model";
+// import { employeeUpdated } from "./employeeSlice";
+import useFetch from "./fetchCafeEmployee";
+
 
 export function EmployeeList() {
-  const dispatch = useDispatch();
 
-  const { entities } = useSelector((state) => state.employees);
+  const dispatch = useDispatch();  
+  const { pathname } = useLocation();
+  const cafeID = pathname.replace("/employee/", "");
+  let url = `${baseURL}`+"employees/"+`${cafeID}`;
+  let entities = [];
+  entities  = useFetch(url);
+  entities = entities.data || "";
+  
   const loading = useSelector((state) => state.loading);
 
   const handleDelete = (id) => {
     dispatch(employeeDeleted({ id }));
+    let url = `${baseURL}`+"employee/"+`${id}`;
+    axios.delete(url).then((res) => {
+      console.log(res.status.code);
+    })
   };
 
   return (
@@ -19,15 +35,7 @@ export function EmployeeList() {
         <h1>Employee Detail</h1>
       </div>
       <div className="row">
-        <div className="two columns">
-          <button
-            onClick={() => dispatch(fetchEmployees())}
-            className="button-primary"
-          >
-            Load employees
-          </button>
-        </div>
-        <div className="two columns">
+        <div className="column">
           <Link to="/add-employee">
             <button className="button-primary">Add employee</button>
           </Link>
@@ -52,7 +60,6 @@ export function EmployeeList() {
               {entities.length &&
                 entities.map(({ _id, name, email_address,phone_number,gender }, i) => (
                   <tr key={i}>
-                    {/* <td>{_id}</td> */}
                     <td>{name}</td>
                     <td>{email_address}</td>
                     <td>{phone_number}</td>
@@ -64,7 +71,7 @@ export function EmployeeList() {
                       </Link>
                     </td>
                   </tr>
-                ))}
+                  ))}
             </tbody>
           </table>
         )}

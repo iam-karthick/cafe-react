@@ -8,7 +8,7 @@ export default function Navbar() {
       Café Management portal
       </Link>
       <ul>
-        <CustomLink to="/cafe">Café</CustomLink>
+        <CustomLink to="/">Café</CustomLink>
         <CustomLink to="/employee">Employee</CustomLink>
       </ul>
     </nav>
